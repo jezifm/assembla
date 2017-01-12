@@ -1,5 +1,7 @@
 # Assembla
 [![Build Status](https://travis-ci.org/jezifm/assembla.svg?branch=master)](https://travis-ci.org/jezifm/assembla)
+[![Coverage Status](https://coveralls.io/repos/github/jezifm/assembla/badge.svg?branch=master)](https://coveralls.io/github/jezifm/assembla?branch=master)
+
 Manage assembla tickets from within Emacs. Project is still under development.
 
 Inspired by `magit` and `prodigy`
