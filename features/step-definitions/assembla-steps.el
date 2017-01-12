@@ -1,6 +1,13 @@
+;; fix (undefined) - Symbol's function definition is void: with-mock
+(require 'el-mock)
+(eval-when-compile
+  (require 'cl))
+
 (Given "^I start assembla$"
        (lambda ()
-	 (call-interactively 'assembla)))
+	 (with-mock
+	   (stub assembla-get-spaces => (read (f-read "fixture-spaces.el")))
+	   (call-interactively 'assembla))))
 
 (Given "^I load the following:$"
        (lambda (body)
@@ -35,3 +42,7 @@
 (Then "I should not be in assembla mode"
       (lambda ()
 	(cl-assert (not (equal major-mode 'assembla-mode)))))
+
+(Then "I should see my spaces"
+      (lambda ()
+	(cl-assert (not (equal (count-lines (point-min) (point-max)) 4)))))
