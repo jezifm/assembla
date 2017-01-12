@@ -24,3 +24,7 @@ Given I start assembla
 Then I should be in assembla mode
 When I press "q"
 Then I should not be in assembla mode
+
+Scenario: Spaces
+Given I start assembla
+Then I should see my spaces
