@@ -1,0 +1,8 @@
+* Overview
+List of features we might include in the package
+* Possible Features
+  - tickets load after pressing =<ret>= on a *space*
+  - tickets load after pressing =tab= on a *space*
+  - all tickets load after pressing =C-S-<tab>= (visibility cycling from org mode)
+  - allow sorting on assembla buffer
+  - deleting just like in =dired=
