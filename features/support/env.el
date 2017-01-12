@@ -1,4 +1,8 @@
 (require 'f)
+(require 'ert)
+(require 'el-mock)
+(eval-when-compile
+    (require 'cl)) ;; for el-mock
 
 (defvar assembla-support-path (f-dirname load-file-name))
 (defvar assembla-features-path (f-parent assembla-support-path))
