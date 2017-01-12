@@ -1,9 +1,6 @@
 # Assembla
-
-Manage assembla tickets from within Emacs. 
-
-Project is still under development...
 [![Build Status](https://travis-ci.org/jezifm/assembla.svg?branch=master)](https://travis-ci.org/jezifm/assembla)
+Manage assembla tickets from within Emacs. Project is still under development.
 
 Inspired by `magit` and `prodigy`
 
