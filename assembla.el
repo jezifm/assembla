@@ -38,6 +38,8 @@
 (defvar assembla-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") 'assembla-quit)
+    (define-key map (kbd "p") 'previous-line)
+    (define-key map (kbd "n") 'forward-line)
     map)
   "Keymap for `assembla-mode'.")
 
