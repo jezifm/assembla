@@ -22,12 +22,18 @@
 
 ;;; Code:
 
+(defconst assembla-api "https://api.assembla.com/v1")
+(defconst assembla-api-spaces "https://api.assembla.com/v1/spaces")
+
 (defcustom assembla-buffer-name "*assembla*"
   "Name of Assembla buffer"
   :group 'assembla)
 
 (defvar assembla-mode-hook nil
   "Mode hook for `assembla-mode'.")
+
+(defvar assembla-settings-path nil
+  "path of assembla credentials")
 
 (defvar assembla-mode-map
   (let ((map (make-sparse-keymap)))
@@ -41,12 +47,38 @@
   (interactive)
   (kill-buffer assembla-buffer-name))
 
+(defun assembla-get-name (space)
+  "Return wiki name from json SPACE"
+  (cdr (assoc 'name space)))
+
+(defun assembla-get-spaces ()
+  "Put assembla spaces in scratch buffer"
+  (interactive)
+  (let ((url-request-method "GET")
+	(url-request-extra-headers
+	 `(("X-Api-Key" . ,assembla-api-key)
+	   ("X-Api-Secret" . ,assembla-api-secret)
+	   ("Content-Type" . "json"))))
+    (with-current-buffer (url-retrieve-synchronously assembla-api-spaces)
+      (goto-char url-http-end-of-headers)
+      (json-read))))
+
+(defun assembla-spaces-to-buffer ()
+  "Refresh assembla buffer with SPACES"
+  (interactive)
+  (with-current-buffer assembla-buffer-name
+    (let ((spaces (assembla-get-spaces)))
+      (erase-buffer)
+      (insert (mapconcat 'assembla-get-name spaces "\n")))))
+
 ;;;###autoload
 (defun assembla ()
   "Start Assembla mode."
   (interactive)
   (switch-to-buffer (get-buffer-create assembla-buffer-name))
   (kill-all-local-variables)
+  (setq buffer-read-only nil)
+  (assembla-spaces-to-buffer)
   (setq buffer-read-only t)
   (setq mode-name "Assembla")
   (setq major-mode 'assembla-mode)
