@@ -32,9 +32,6 @@
 (defvar assembla-mode-hook nil
   "Mode hook for `assembla-mode'.")
 
-(defvar assembla-settings-path nil
-  "path of assembla credentials")
-
 (defvar assembla-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") 'assembla-quit)
@@ -50,11 +47,11 @@
   (kill-buffer assembla-buffer-name))
 
 (defun assembla-get-name (space)
-  "Return wiki name from json SPACE"
+  "Extract name from space object"
   (cdr (assoc 'name space)))
 
 (defun assembla-get-spaces ()
-  "Put assembla spaces in scratch buffer"
+  "Retrieve assembla spaces"
   (interactive)
   (let ((url-request-method "GET")
 	(url-request-extra-headers
@@ -66,7 +63,7 @@
       (json-read))))
 
 (defun assembla-spaces-to-buffer ()
-  "Refresh assembla buffer with SPACES"
+  "Populate buffer with assembla spaces"
   (interactive)
   (with-current-buffer assembla-buffer-name
     (let ((spaces (assembla-get-spaces)))
