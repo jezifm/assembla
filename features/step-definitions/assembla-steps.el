@@ -1,7 +1,7 @@
 (Given "^I start assembla$"
        (lambda ()
 	 (with-mock
-	   (stub assembla-get-spaces => (read (f-read "fixture-spaces.el")))
+	   (stub assembla-get-spaces => (read (f-read "test-fixtures/spaces.el")))
 	   (call-interactively 'assembla))))
 
 (Given "^I load the following:$"
