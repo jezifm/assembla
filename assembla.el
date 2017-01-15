@@ -57,10 +57,18 @@
 	(url-request-extra-headers
 	 `(("X-Api-Key" . ,assembla-api-key)
 	   ("X-Api-Secret" . ,assembla-api-secret)
-	   ("Content-Type" . "json"))))
+	   ("Content-Type" . "json")))
+	(json-object-type 'plist))
     (with-current-buffer (url-retrieve-synchronously assembla-api-spaces)
       (goto-char url-http-end-of-headers)
       (json-read))))
+
+(defun assembla-get-tickets ()
+  "Get tickets on buffer"
+  (interactive)
+  (setq buffer-read-only nil)
+  (erase-buffer)
+  (insert "My ticket"))
 
 (defun assembla-spaces-to-buffer ()
   "Populate buffer with assembla spaces"
