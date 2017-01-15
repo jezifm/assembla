@@ -25,6 +25,11 @@ Then I should be in assembla mode
 When I press "q"
 Then I should not be in assembla mode
 
-Scenario: Spaces
+Scenario: Spaces List
 Given I start assembla
 Then I should see my spaces
+
+Scenario: Ticket List
+Given I start assembla
+When I press "<return>"
+Then I should see my tickets
