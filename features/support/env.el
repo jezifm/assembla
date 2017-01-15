@@ -15,4 +15,5 @@
 (require 'assembla (f-expand "assembla" assembla-root-path))
 
 (Before
- (makunbound 'foo))
+ (makunbound 'foo)
+ (setq fixture-spaces (read (f-read "test-fixtures/spaces.el"))))

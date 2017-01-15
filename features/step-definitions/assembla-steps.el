@@ -1,7 +1,7 @@
 (Given "^I start assembla$"
        (lambda ()
 	 (with-mock
-	   (stub assembla-get-spaces => (read (f-read "test-fixtures/spaces.el")))
+	   (stub assembla-get-spaces => fixture-spaces)
 	   (call-interactively 'assembla))))
 
 (Given "^I load the following:$"
@@ -10,7 +10,7 @@
 
 (When "^I press \"\\([^\"]+\\)\"$"
       (lambda (key)
-	(execute-kbd-macro key)))
+	(execute-kbd-macro (kbd key))))
 
 (Then "^I should be in assembla mode$"
       (lambda ()
@@ -39,4 +39,7 @@
 
 (Then "I should see my spaces"
       (lambda ()
-	(should-not (equal (count-lines (point-min) (point-max)) 4))))
+	(should (equal (progn
+			 (goto-char (point-min))
+			 (buffer-substring (point-min) (line-end-position)))
+		       "Test Space"))))
