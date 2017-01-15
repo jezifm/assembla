@@ -37,9 +37,12 @@
       (lambda ()
 	(should-not (equal major-mode 'assembla-mode))))
 
-(Then "I should see my spaces"
+(Then "^I should see my spaces$"
       (lambda ()
 	(should (equal (progn
 			 (goto-char (point-min))
 			 (buffer-substring (point-min) (line-end-position)))
 		       "Test Space"))))
+
+(Then "^I should see my tickets$"
+      (lambda () (should (equal (get-line-at-pos (point-min)) "My ticket"))))
