@@ -49,19 +49,26 @@
 
 (defun assembla-get-name (space)
   "Extract name from space object"
-  (cdr (assoc 'name space)))
+  (plist-get space ':name))
 
-(defun assembla-get-spaces ()
-  "Retrieve assembla spaces"
+(defun assembla-get-resource (path)
+  "Get list of resource"
   (interactive)
-  (let ((url-request-method "GET")
+  (let ((json-object-type 'plist)
+	(url-request-method "GET")
 	(url-request-extra-headers
 	 `(("X-Api-Key" . ,assembla-api-key)
 	   ("X-Api-Secret" . ,assembla-api-secret)
 	   ("Content-Type" . "json"))))
-    (with-current-buffer (url-retrieve-synchronously assembla-api-spaces)
-      (goto-char url-http-end-of-headers)
+    (with-current-buffer (url-retrieve-synchronously (format "%s%s" assembla-api path))
+      (goto-char (point-min))
+      (re-search-forward "^$")
       (json-read))))
+
+(defun assembla-get-spaces ()
+  "Retrieve assembla spaces"
+  (interactive)
+  (assembla-get-resource "/spaces"))
 
 (defun assembla-get-tickets ()
   "Get tickets on buffer"

@@ -1,7 +1,7 @@
 (Given "^I start assembla$"
        (lambda ()
 	 (with-mock
-	   (stub assembla-get-spaces => fixture-spaces)
+	   (stub url-retrieve-synchronously => (find-file-noselect fixture-path-spaces))
 	   (call-interactively 'assembla))))
 
 (Given "^I load the following:$"

@@ -21,6 +21,9 @@
 (defvar assembla-root-path (f-parent assembla-features-path))
 (require 'assembla (f-expand "assembla" assembla-root-path))
 
+(defvar fixture-path-spaces (f-expand "test-fixtures/spaces-http-raw" assembla-root-path))
+
 (Before
  (makunbound 'foo)
- (setq fixture-spaces (read (f-read "test-fixtures/spaces.el"))))
+ (setq assembla-api-key "api-key")
+ (setq assembla-api-secret "api-secret"))

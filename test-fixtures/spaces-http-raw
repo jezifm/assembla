@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+Date: Mon, 16 Jan 2017 13:03:42 GMT
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Cache-Control: max-age=0, private, must-revalidate
+X-Log-User-ID: dm8XOmTEKr5Qxddmr6CpXy
+X-Log-User-Login: space_jez
+X-XSS-Protection: 1; mode=block
+X-Request-Id: 0eaf9805-ed6c-403b-9095-b24a58d18a11
+X-Frame-Options: SAMEORIGIN
+X-Runtime: 0.100841
+X-Content-Type-Options: nosniff
+X-Powered-By: Phusion Passenger 5.0.28
+Set-Cookie: dui=dm8XOmTEKr5Qxddmr6CpXy; domain=.assembla.com; path=/; expires=Tue, 16 Jan 2018 13:03:42 -0000
+Status: 200 OK
+Content-Encoding: gzip
+Server: cloudflare-nginx
+CF-RAY: 3221c4df5db8222e-LAX
+
+[{"id":"brs1F4WPar5OkeacwqjQXA","name":"Test Space","description":"","wiki_name":"space","public_permissions":0,"team_permissions":2,"watcher_permissions":1,"share_permissions":true,"team_tab_role":0,"created_at":"2016-12-15T06:32:57.000Z","updated_at":"2017-01-12T04:16:42.000Z","default_showpage":"Tickets","tabs_order":"---\n- tickets\n- team\n- wiki\n- stream\n- files\n- admin\n- git\n- messages\n- custom_tab\n- webhook\n- ssh\n- time\n- standup\n","parent_id":"brfmTWWPar5OkeacwqjQXA","restricted":false,"restricted_date":null,"commercial_from":"2016-12-15T06:32:57.000Z","banner":null,"banner_height":null,"banner_text":"","banner_link":null,"style":"","status":1,"approved":false,"is_manager":true,"is_volunteer":false,"is_commercial":true,"can_join":false,"can_apply":true,"last_payer_changed_at":null},{"id":"a2VBRsWQSr5P7dacwqEsg8","name":"Space Mobile","description":null,"wiki_name":"space-mobile","public_permissions":0,"team_permissions":2,"watcher_permissions":1,"share_permissions":true,"team_tab_role":0,"created_at":"2016-12-15T09:45:29.000Z","updated_at":"2016-12-21T10:16:47.000Z","default_showpage":"Tickets","tabs_order":"---\n- tickets\n- team\n- wiki\n- stream\n- files\n- admin\n- messages\n- standup\n- support\n- webhook\n- time\n- ssh\n","parent_id":"brfmTWWPar5OkeacwqjQXA","restricted":false,"restricted_date":null,"commercial_from":"2016-12-15T09:45:29.000Z","banner":null,"banner_height":null,"banner_text":"","banner_link":null,"style":"","status":1,"approved":false,"is_manager":true,"is_volunteer":false,"is_commercial":true,"can_join":false,"can_apply":true,"last_payer_changed_at":null},{"id":"b-hOFUSF0r5QFddmr6bg7m","name":"Skywalker Mobile App","description":"","wiki_name":"skywalker-mobile-app","public_permissions":0,"team_permissions":2,"watcher_permissions":1,"share_permissions":true,"team_tab_role":0,"created_at":"2016-11-24T04:21:38.000Z","updated_at":"2016-11-30T02:32:05.000Z","default_showpage":"Summary","tabs_order":"---\n- summary\n- tickets\n- svn\n- wiki\n- stream\n- files\n- team\n- admin\n- messages\n- ssh\n- time\n- support\n- subprojects\n- standup\n","parent_id":"b7yruYQU4r5OoAacwqEsg8","restricted":true,"restricted_date":"2017-01-16","commercial_from":"2016-11-24T04:21:38.000Z","banner":null,"banner_height":null,"banner_text":"","banner_link":null,"style":"","status":1,"approved":false,"is_manager":true,"is_volunteer":false,"is_commercial":true,"can_join":false,"can_apply":true,"last_payer_changed_at":null}]
