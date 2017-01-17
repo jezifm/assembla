@@ -55,6 +55,7 @@
   "Get list of resource"
   (interactive)
   (let ((json-object-type 'plist)
+	(json-array-type 'list)
 	(url-request-method "GET")
 	(url-request-extra-headers
 	 `(("X-Api-Key" . ,assembla-api-key)
@@ -70,12 +71,28 @@
   (interactive)
   (assembla-get-resource "/spaces"))
 
+(defun assembla-get-ticket-desc (ticket)
+  "Return description of ticket"
+  (plist-get ticket ':summary))
+
 (defun assembla-get-tickets ()
   "Get tickets on buffer"
   (interactive)
   (setq buffer-read-only nil)
-  (erase-buffer)
-  (insert "Implement me"))
+  (let* ((space (text-properties-at (point)))
+	 (space-id (plist-get space ':id))
+	 (tickets (assembla-get-resource (format "/spaces/%s/tickets" space-id))))
+    (erase-buffer)
+    (insert (s-join "\n" (mapcar 'assembla-get-ticket-desc tickets)))))
+
+(defun assembla-insert-space (space)
+  "Insert SPACE to buffer"
+  (let ((name (plist-get space ':name)))
+    (insert name)
+    (let ((beg (line-beginning-position))
+	  (end (line-end-position)))
+      (set-text-properties beg end space))
+    (insert "\n")))
 
 (defun assembla-spaces-to-buffer ()
   "Populate buffer with assembla spaces"
@@ -83,7 +100,7 @@
   (with-current-buffer assembla-buffer-name
     (let ((spaces (assembla-get-spaces)))
       (erase-buffer)
-      (insert (mapconcat 'assembla-get-name spaces "\n")))))
+      (dolist (space spaces nil) (assembla-insert-space space)))))
 
 ;;;###autoload
 (defun assembla ()
