@@ -83,7 +83,16 @@
 	 (space-id (plist-get space ':id))
 	 (tickets (assembla-get-resource (format "/spaces/%s/tickets" space-id))))
     (erase-buffer)
-    (insert (s-join "\n" (mapcar 'assembla-get-ticket-desc tickets)))))
+    (dolist (ticket tickets nil) (assembla-insert-ticket ticket))))
+
+(defun assembla-insert-ticket (ticket)
+  "Insert TICKET to buffer"
+  (let ((summary (plist-get ticket ':summary)))
+    (insert summary)
+    (let ((beg (line-beginning-position))
+	  (end (line-end-position)))
+      (set-text-properties beg end ticket))
+    (insert "\n")))
 
 (defun assembla-insert-space (space)
   "Insert SPACE to buffer"

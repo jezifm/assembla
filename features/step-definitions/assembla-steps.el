@@ -55,4 +55,6 @@
 		       (get-line-at-pos (point))))))
 
 (Then "^I should see my tickets$"
-      (lambda () (should (equal (get-line-at-pos (point-min)) "My ticket"))))
+      (lambda () (should (equal (get-line-at-pos (point-min)) "My ticket")))
+      (lambda () (should (equal (get-text-property (point-min) ':summary)
+				(get-line-at-pos (point-min))))))
