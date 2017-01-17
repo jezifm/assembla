@@ -8,6 +8,12 @@
        (lambda (body)
 	 (eval (car (read-from-string body)))))
 
+(When "^I press return$"
+      (lambda ()
+	(with-mock
+	  (stub url-retrieve-synchronously => (find-file-noselect fixture-path-tickets))
+	  (execute-kbd-macro (kbd "<return>")))))
+
 (When "^I press \"\\([^\"]+\\)\"$"
       (lambda (key)
 	(execute-kbd-macro (kbd key))))
@@ -42,7 +48,11 @@
 	(should (equal (progn
 			 (goto-char (point-min))
 			 (buffer-substring (point-min) (line-end-position)))
-		       "Test Space"))))
+		       "Test Space"))
+	(should (equal (progn
+			 (goto-char (point-min))
+			 (get-text-property (point) ':name))
+		       (get-line-at-pos (point))))))
 
 (Then "^I should see my tickets$"
       (lambda () (should (equal (get-line-at-pos (point-min)) "My ticket"))))

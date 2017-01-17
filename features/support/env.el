@@ -22,6 +22,7 @@
 (require 'assembla (f-expand "assembla" assembla-root-path))
 
 (defvar fixture-path-spaces (f-expand "test-fixtures/spaces-http-raw" assembla-root-path))
+(defvar fixture-path-tickets (f-expand "test-fixtures/tickets-http-raw" assembla-root-path))
 
 (Before
  (makunbound 'foo)

@@ -31,5 +31,5 @@ Then I should see my spaces
 
 Scenario: Ticket List
 Given I start assembla
-When I press "<return>"
+When I press return
 Then I should see my tickets
