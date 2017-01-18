@@ -37,10 +37,15 @@
     (define-key map (kbd "q") 'assembla-quit)
     (define-key map (kbd "p") 'previous-line)
     (define-key map (kbd "n") 'forward-line)
-    (define-key map (kbd "<return>") 'assembla-get-tickets)
+    (define-key map (kbd "<return>") 'assembla-trigger-return)
     map)
   "Keymap for `assembla-mode'.")
 
+(defun assembla-trigger-return ()
+  "Trigger the CALLBACK attached to :on-return key"
+  (interactive)
+  (let ((callback (get-text-property (point) ':on-return)))
+    (funcall callback)))
 
 (defun assembla-quit ()
   "Quit assembla buffer"
@@ -79,11 +84,18 @@
   "Get tickets on buffer"
   (interactive)
   (setq buffer-read-only nil)
-  (let* ((space (text-properties-at (point)))
-	 (space-id (plist-get space ':id))
-	 (tickets (assembla-get-resource (format "/spaces/%s/tickets" space-id))))
-    (erase-buffer)
-    (dolist (ticket tickets nil) (assembla-insert-ticket ticket))))
+  (save-excursion
+    (let* ((space (text-properties-at (point)))
+	   (space-id (plist-get space ':id))
+	   (tickets (assembla-get-resource (format "/spaces/%s/tickets" space-id))))
+      (erase-buffer)
+      (dolist (ticket tickets nil) (assembla-insert-ticket ticket)))))
+
+(defun assembla-load-ticket ()
+  "Load TICKET"
+  (let ((ticket-space_id (get-text-property (point) ':space_id))
+	(ticket-number (get-text-property (point) ':number)))
+    (browse-url (format "https://app.assembla.com/spaces/%s/tickets/%s" ticket-space_id ticket-number))))
 
 (defun assembla-insert-ticket (ticket)
   "Insert TICKET to buffer"
@@ -91,7 +103,8 @@
     (insert summary)
     (let ((beg (line-beginning-position))
 	  (end (line-end-position)))
-      (set-text-properties beg end ticket))
+      (set-text-properties beg end ticket)
+      (add-text-properties beg end '(:on-return assembla-load-ticket)))
     (insert "\n")))
 
 (defun assembla-insert-space (space)
@@ -100,16 +113,18 @@
     (insert name)
     (let ((beg (line-beginning-position))
 	  (end (line-end-position)))
-      (set-text-properties beg end space))
+      (set-text-properties beg end space)
+      (add-text-properties beg end '(:on-return assembla-get-tickets)))
     (insert "\n")))
 
 (defun assembla-spaces-to-buffer ()
   "Populate buffer with assembla spaces"
   (interactive)
   (with-current-buffer assembla-buffer-name
-    (let ((spaces (assembla-get-spaces)))
-      (erase-buffer)
-      (dolist (space spaces nil) (assembla-insert-space space)))))
+    (save-excursion
+      (let ((spaces (assembla-get-spaces)))
+	(erase-buffer)
+	(dolist (space spaces nil) (assembla-insert-space space))))))
 
 ;;;###autoload
 (defun assembla ()
