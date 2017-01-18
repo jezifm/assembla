@@ -14,6 +14,12 @@
 	  (stub url-retrieve-synchronously => (find-file-noselect fixture-path-tickets))
 	  (execute-kbd-macro (kbd "<return>")))))
 
+(When "^I press return to tickets$"
+      (lambda ()
+	(with-mock
+	  (mock (browse-url *) :times 1)
+	  (execute-kbd-macro (kbd "<return>")))))
+
 (When "^I press \"\\([^\"]+\\)\"$"
       (lambda (key)
 	(execute-kbd-macro (kbd key))))
@@ -58,3 +64,6 @@
       (lambda () (should (equal (get-line-at-pos (point-min)) "My ticket")))
       (lambda () (should (equal (get-text-property (point-min) ':summary)
 				(get-line-at-pos (point-min))))))
+
+(Then "^I should be browsing the web$"
+      (lambda () (should t))) ;; not implemented, unable to retrieve last function called
