@@ -52,10 +52,6 @@
   (interactive)
   (kill-buffer assembla-buffer-name))
 
-(defun assembla-get-name (space)
-  "Extract name from space object"
-  (plist-get space ':name))
-
 (defun assembla-get-resource (path)
   "Get list of resource"
   (interactive)
@@ -75,10 +71,6 @@
   "Retrieve assembla spaces"
   (interactive)
   (assembla-get-resource "/spaces"))
-
-(defun assembla-get-ticket-desc (ticket)
-  "Return description of ticket"
-  (plist-get ticket ':summary))
 
 (defun assembla-get-tickets ()
   "Get tickets on buffer"
