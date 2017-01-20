@@ -22,6 +22,7 @@
 
 ;;; Code:
 
+;; Constants
 (defconst assembla-api "https://api.assembla.com/v1")
 (defconst assembla-api-spaces "https://api.assembla.com/v1/spaces")
 
@@ -29,9 +30,12 @@
   "Name of Assembla buffer"
   :group 'assembla)
 
+;; Variables
 (defvar assembla-current-view nil "...")
 (defvar assembla-last-resource nil "...")
 (defvar assembla-mode-hook nil "Mode hook for `assembla-mode'.")
+
+;; Keymaps
 (defvar assembla-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") 'assembla-quit)
@@ -52,10 +56,6 @@
   (interactive)
   (next-line)
   (goto-char (line-beginning-position)))
-
-(defun assembla-pluck (property plists)
-  "Pluck PROPERTY on each element in the LIST"
-  (mapcar (lambda (plist) (plist-get plist property)) plists))
 
 (defun assembla-merge (property value plists)
   "..."
@@ -85,7 +85,6 @@
       (save-excursion
 	(previous-line)
 	(assembla-add-text-properties-to-line item)))))
-
 
 ;; My need the detail view when we go editing spaces, tickets or user
 ;; profiles. --jez 2017-01-20
@@ -137,12 +136,9 @@
   "Get tickets on buffer"
   (interactive)
   (setq buffer-read-only nil)
-  (save-excursion
-    (let* ((space (text-properties-at (point)))
-	   (space-id (plist-get space ':id))
-	   (tickets (assembla-get-resource (format "/spaces/%s/tickets" space-id))))
-      (erase-buffer)
-      (dolist (ticket tickets nil) (assembla-insert-ticket ticket)))))
+  (let* ((collection (assembla-get-resource
+		      (format "/spaces/%s/tickets" (get-text-property (point) ':id)))))
+    (assembla-merge ':on-return 'assembla-load-ticket collection)))
 
 (defun assembla-load-ticket ()
   "Load TICKET"
@@ -152,11 +148,7 @@
 
 (defun assembla-tickets-to-buffer ()
   "..."
-  (let* ((space-id (get-text-property (point) ':space_id))
-	 (ticket-number (get-text-property (point) ':number))
-	 (collection (assembla-get-resource (format "/spaces/%s/tickets/%s" space-id ticket-number)))
-	 (collection (assembla-merge ':on-return 'assembla-load-ticket collection))
-	 (buffer-read-only nil))
+  (let* ((collection (assembla-get-tickets)))
     (assembla-list-view collection)))
 
 (defun assembla-spaces-to-buffer ()
