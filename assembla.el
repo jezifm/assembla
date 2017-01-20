@@ -29,23 +29,79 @@
   "Name of Assembla buffer"
   :group 'assembla)
 
-(defvar assembla-mode-hook nil
-  "Mode hook for `assembla-mode'.")
-
+(defvar assembla-current-view nil "...")
+(defvar assembla-last-resource nil "...")
+(defvar assembla-mode-hook nil "Mode hook for `assembla-mode'.")
 (defvar assembla-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") 'assembla-quit)
-    (define-key map (kbd "p") 'previous-line)
-    (define-key map (kbd "n") 'forward-line)
+    (define-key map (kbd "p") 'assembla-previous-line)
+    (define-key map (kbd "n") 'assembla-forward-line)
     (define-key map (kbd "<return>") 'assembla-trigger-return)
     map)
   "Keymap for `assembla-mode'.")
 
+(defun assembla-previous-line ()
+  "Move to previous line maintaing cursor at beginning of line"
+  (interactive)
+  (previous-line)
+  (goto-char (line-beginning-position)))
+
+(defun assembla-next-line ()
+  "Move to next line maintaing cursor at beginning of line"
+  (interactive)
+  (next-line)
+  (goto-char (line-beginning-position-position)))
+
+(defun assembla-pluck (property plists)
+  "Pluck PROPERTY on each element in the LIST"
+  (mapcar (lambda (plist) (plist-get plist property)) plists))
+
+(defun assembla-merge (property value plists)
+  "..."
+  (mapcar (lambda (plist) (plist-put plist property value)) plists))
+
+(defun assembla-add-text-properties-to-line (plist &optional pos)
+  "..."
+  (unless pos (setq pos (point)))
+    (save-excursion
+      (goto-char pos)
+      (let ((beg (line-beginning-position))
+	    (end (1+ (line-end-position))))
+	(add-text-properties beg end plist))))
+
+(defun assembla-list-view (collection)
+  "Display list view of RESOURCE"
+  (interactive "sResource path: ")
+  (erase-buffer)
+  (save-excursion 
+    (dolist (item collection nil)
+      (insert (format "%s\n" (s-join " " (list
+					  (plist-get item
+						     (cond
+						      ((plist-member item ':name) ':name)
+						      ((plist-member item ':summary) ':summary)
+						      (t "Unable to find description")))))))
+      (save-excursion
+	(previous-line)
+	(assembla-add-text-properties-to-line item)))))
+
+
+(defun assembla-goto-detail-view ()
+  "..."
+  (interactive)
+  (setq buffer-read-only nil)
+  (let* ((resource (format "%s/%s" assembla-last-resource (get-text-property (point) ':id)))
+	 (collection (assembla-get-resource (format "%s/tickets" resource))))
+    (assembla-list-view collection)))
+
 (defun assembla-trigger-return ()
   "Trigger the CALLBACK attached to :on-return key"
   (interactive)
-  (let ((callback (get-text-property (point) ':on-return)))
-    (funcall callback)))
+  (let* ((callback (plist-get (text-properties-at (point)) ':on-return)))
+    (funcall callback))
+
+)
 
 (defun assembla-quit ()
   "Quit assembla buffer"
@@ -55,6 +111,7 @@
 (defun assembla-get-resource (path)
   "Get list of resource"
   (interactive)
+  (setq assembla-last-resource path)
   (let ((json-object-type 'plist)
 	(json-array-type 'list)
 	(url-request-method "GET")
@@ -102,21 +159,25 @@
 (defun assembla-insert-space (space)
   "Insert SPACE to buffer"
   (let ((name (plist-get space ':name)))
-    (insert name)
-    (let ((beg (line-beginning-position))
-	  (end (line-end-position)))
-      (set-text-properties beg end space)
-      (add-text-properties beg end '(:on-return assembla-get-tickets)))
-    (insert "\n")))
+    (save-excursion
+      (insert (format "%s\n" name)))
+    (assembla-add-text-properties-to-line space)))
+
+(defun assembla-tickets-to-buffer ()
+  "..."
+  (let* ((space-id (get-text-property (point) ':space_id))
+	 (ticket-number (get-text-property (point) ':number))
+	 (collection (assembla-get-resource (format "/spaces/%s/tickets/%s" space-id ticket-number)))
+	 (collection (assembla-merge ':on-return 'assembla-load-ticket collection))
+	 (buffer-read-only nil))
+    (assembla-list-view collection)))
 
 (defun assembla-spaces-to-buffer ()
   "Populate buffer with assembla spaces"
   (interactive)
-  (with-current-buffer assembla-buffer-name
-    (save-excursion
-      (let ((spaces (assembla-get-spaces)))
-	(erase-buffer)
-	(dolist (space spaces nil) (assembla-insert-space space))))))
+  (let* ((collection (assembla-get-resource "/spaces"))
+	 (collection (assembla-merge ':on-return 'assembla-tickets-to-buffer collection)))
+    (assembla-list-view collection)))
 
 ;;;###autoload
 (defun assembla ()
