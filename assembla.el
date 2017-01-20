@@ -82,9 +82,7 @@
 						      ((plist-member item ':name) ':name)
 						      ((plist-member item ':summary) ':summary)
 						      (t "Unable to find description")))))))
-      (save-excursion
-	(previous-line)
-	(assembla-add-text-properties-to-line item)))))
+      (assembla-add-text-properties-to-line item (1- (point))))))
 
 ;; My need the detail view when we go editing spaces, tickets or user
 ;; profiles. --jez 2017-01-20
