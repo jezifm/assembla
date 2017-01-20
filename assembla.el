@@ -63,18 +63,18 @@
 
 (defun assembla-add-text-properties-to-line (plist &optional pos)
   "..."
-  (unless pos (setq pos (point)))
+  (let ((pos (or pos (point))))
     (save-excursion
       (goto-char pos)
       (let ((beg (line-beginning-position))
 	    (end (1+ (line-end-position))))
-	(add-text-properties beg end plist))))
+	(add-text-properties beg end plist)))))
 
 (defun assembla-list-view (collection)
   "Display list view of RESOURCE"
   (interactive "sResource path: ")
   (erase-buffer)
-  (save-excursion 
+  (save-excursion
     (dolist (item collection nil)
       (insert (format "%s\n" (s-join " " (list
 					  (plist-get item
@@ -99,14 +99,12 @@
   "Trigger the CALLBACK attached to :on-return key"
   (interactive)
   (let* ((callback (plist-get (text-properties-at (point)) ':on-return)))
-    (funcall callback))
-
-)
+    (funcall callback)))
 
 (defun assembla-quit ()
   "Quit assembla buffer"
   (interactive)
-  (kill-buffer assembla-buffer-name))
+  (previous-buffer))
 
 (defun assembla-get-resource (path)
   "Get list of resource"
