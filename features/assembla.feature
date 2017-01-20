@@ -9,6 +9,15 @@ Given I start assembla
 Then I should be in buffer "*assembla*"
 And the buffer should be read only
 
+Scenario: Assembla Navigation
+Given I start assembla
+When I press "n"
+Then I should go down one line
+And My cursor is at the beginning of line
+When I press "p"
+Then I should go up one line
+And My cursor is at the beginning of line
+
 Scenario: Mode hook
 Given I load the following:
   """

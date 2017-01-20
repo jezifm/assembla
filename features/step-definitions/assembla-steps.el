@@ -67,3 +67,12 @@
 
 (Then "^I should be browsing the web$"
       (lambda () (should t))) ;; not implemented, unable to retrieve last function called
+
+(Then "^I should go up one line$"
+      (lambda () (should (equal (line-number-at-pos) 1))))
+
+(Then "^I should go down one line$"
+      (lambda () (should (equal (line-number-at-pos) 2))))
+
+(Then "^My cursor is at the beginning of line$"
+      (lambda () (should (equal (point) (line-beginning-position)))))
