@@ -66,17 +66,6 @@
       (add-text-properties 0 (length line-text) item line-text)
       (insert line-text))))
 
-;; My need the detail view when we go editing spaces, tickets or user
-;; profiles. --jez 2017-01-20
-;;
-;; (defun assembla-goto-detail-view ()
-;;   "..."
-;;   (interactive)
-;;   (setq buffer-read-only nil)
-;;   (let* ((resource (format "%s/%s" assembla-last-resource (get-text-property (point) ':id)))
-;; 	 (collection (assembla-get-resource (format "%s/tickets" resource))))
-;;     (assembla-list-view collection)))
-
 (defun assembla-trigger-return ()
   "Trigger the CALLBACK attached to :on-return key"
   (interactive)
