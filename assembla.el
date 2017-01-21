@@ -63,19 +63,17 @@
 
 (defun assembla-list-view (collection)
   "Display list view of RESOURCE"
-  (interactive "sResource path: ")
-  (let (property
-	(item (car collection)))
-    (erase-buffer)
-    (setq property
-	  (cond
-	   ((plist-member item ':name) ':name)
-	   ((plist-member item ':summary) ':summary)))
-    (dolist (item collection nil)
-      (let ((line-text (format "%s\n" (plist-get item property))))
+  (erase-buffer)
+  (save-excursion
+    (let* ((item (car collection))
+	   (property (cond
+		      ((plist-member item ':name) ':name)
+		      ((plist-member item ':summary) ':summary)))
+	   line-text)
+      (dolist (item collection nil)
+	(setq line-text (format "%s\n" (plist-get item property)))
 	(add-text-properties 0 (length line-text) item line-text)
-	(insert line-text)))
-    (goto-char (point-min))))
+	(insert line-text)))))
 
 ;; My need the detail view when we go editing spaces, tickets or user
 ;; profiles. --jez 2017-01-20
@@ -91,8 +89,7 @@
 (defun assembla-trigger-return ()
   "Trigger the CALLBACK attached to :on-return key"
   (interactive)
-  (let* ((callback (plist-get (text-properties-at (point)) ':on-return)))
-    (funcall callback)))
+  (funcall (get-text-property (point) ':on-return)))
 
 (defun assembla-quit ()
   "Quit assembla buffer"
@@ -109,8 +106,9 @@
 	(url-request-extra-headers
 	 `(("X-Api-Key" . ,assembla-api-key)
 	   ("X-Api-Secret" . ,assembla-api-secret)
-	   ("Content-Type" . "json"))))
-    (with-current-buffer (url-retrieve-synchronously (format "%s%s" assembla-api path))
+	   ("Content-Type" . "json")))
+	(url (format "%s%s" assembla-api path)))
+    (with-current-buffer (url-retrieve-synchronously url)
       (goto-char (point-min))
       (re-search-forward "^$")
       (json-read))))
@@ -118,32 +116,37 @@
 (defun assembla-get-spaces ()
   "Retrieve assembla spaces"
   (interactive)
-  (let* ((collection (assembla-get-resource "/spaces")))
-    (assembla-merge ':on-return 'assembla-tickets-to-buffer collection)))
+  (assembla-get-resource "/spaces"))
 
-(defun assembla-get-tickets ()
+(defun assembla-get-tickets (space)
   "Get tickets on buffer"
   (interactive)
-  (setq buffer-read-only nil)
-  (let* ((collection (assembla-get-resource
-		      (format "/spaces/%s/tickets?per_page=100" (get-text-property (point) ':id)))))
-    (assembla-merge ':on-return 'assembla-load-ticket collection)))
+  (let* ((space-id (plist-get space ':id))
+	 (tickets-path (format "/spaces/%s/tickets?per_page=100" space-id)))
+    (assembla-get-resource tickets-path)))
 
 (defun assembla-load-ticket ()
-  "Load TICKET"
-  (let ((ticket-space_id (get-text-property (point) ':space_id))
-	(ticket-number (get-text-property (point) ':number)))
-    (browse-url (format "https://app.assembla.com/spaces/%s/tickets/%s" ticket-space_id ticket-number))))
+  "Open up a browser loading ticket's URL"
+  (let* ((space-id (get-text-property (point) ':space_id))
+	 (ticket-number (get-text-property (point) ':number))
+	 (ticket-url-template "https://app.assembla.com/spaces/%s/tickets/%s")
+	 (ticket-url (format ticket-url-template space-id ticket-number)))
+    (browse-url ticket-url)))
 
 (defun assembla-tickets-to-buffer ()
   "..."
-  (let* ((collection (assembla-get-tickets)))
-    (assembla-list-view collection)))
+  (let* ((buffer-read-only nil)
+	 (space (text-properties-at (point)))
+	 (tickets (assembla-get-tickets space))
+	 (tickets (assembla-merge ':on-return 'assembla-load-ticket tickets)))
+    (assembla-list-view tickets)))
 
 (defun assembla-spaces-to-buffer ()
   "Populate buffer with assembla spaces"
   (interactive)
-  (let* ((spaces (assembla-get-spaces)))
+  (let* ((buffer-read-only nil)
+	 (spaces (assembla-get-spaces))
+	 (spaces (assembla-merge ':on-return 'assembla-tickets-to-buffer spaces)))
     (assembla-list-view spaces)))
 
 ;;;###autoload
