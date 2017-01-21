@@ -73,16 +73,18 @@
 (defun assembla-list-view (collection)
   "Display list view of RESOURCE"
   (interactive "sResource path: ")
-  (erase-buffer)
-  (save-excursion
+  (let (property
+	(item (car collection)))
+    (erase-buffer)
+    (setq property
+	  (cond
+	   ((plist-member item ':name) ':name)
+	   ((plist-member item ':summary) ':summary)))
     (dolist (item collection nil)
-      (insert (format "%s\n" (s-join " " (list
-					  (plist-get item
-						     (cond
-						      ((plist-member item ':name) ':name)
-						      ((plist-member item ':summary) ':summary)
-						      (t "Unable to find description")))))))
-      (assembla-add-text-properties-to-line item (1- (point))))))
+      (let ((line-text (format "%s\n" (plist-get item property))))
+	(add-text-properties 0 (length line-text) item line-text)
+	(insert line-text)))
+    (goto-char (point-min))))
 
 ;; My need the detail view when we go editing spaces, tickets or user
 ;; profiles. --jez 2017-01-20
@@ -133,7 +135,7 @@
   (interactive)
   (setq buffer-read-only nil)
   (let* ((collection (assembla-get-resource
-		      (format "/spaces/%s/tickets" (get-text-property (point) ':id)))))
+		      (format "/spaces/%s/tickets?per_page=100" (get-text-property (point) ':id)))))
     (assembla-merge ':on-return 'assembla-load-ticket collection)))
 
 (defun assembla-load-ticket ()
