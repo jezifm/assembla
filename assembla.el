@@ -61,15 +61,6 @@
   "..."
   (mapcar (lambda (plist) (plist-put plist property value)) plists))
 
-(defun assembla-add-text-properties-to-line (plist &optional pos)
-  "..."
-  (let ((pos (or pos (point))))
-    (save-excursion
-      (goto-char pos)
-      (let ((beg (line-beginning-position))
-	    (end (1+ (line-end-position))))
-	(add-text-properties beg end plist)))))
-
 (defun assembla-list-view (collection)
   "Display list view of RESOURCE"
   (interactive "sResource path: ")
