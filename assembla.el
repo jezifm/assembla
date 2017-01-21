@@ -57,23 +57,14 @@
   (next-line)
   (goto-char (line-beginning-position)))
 
-(defun assembla-merge (property value plists)
-  "..."
-  (mapcar (lambda (plist) (plist-put plist property value)) plists))
-
-(defun assembla-list-view (collection)
+(defun assembla-list-view (elements)
   "Display list view of RESOURCE"
   (erase-buffer)
   (save-excursion
-    (let* ((item (car collection))
-	   (property (cond
-		      ((plist-member item ':name) ':name)
-		      ((plist-member item ':summary) ':summary)))
-	   line-text)
-      (dolist (item collection nil)
-	(setq line-text (format "%s\n" (plist-get item property)))
-	(add-text-properties 0 (length line-text) item line-text)
-	(insert line-text)))))
+    (dolist (item elements nil)
+      (setq line-text (format "%s\n" (plist-get item :line-text)))
+      (add-text-properties 0 (length line-text) item line-text)
+      (insert line-text))))
 
 ;; My need the detail view when we go editing spaces, tickets or user
 ;; profiles. --jez 2017-01-20
@@ -137,16 +128,28 @@
   "..."
   (let* ((buffer-read-only nil)
 	 (space (text-properties-at (point)))
+	 (space-name (plist-get space ':name))
+	 (buffer-name (format "%s: %s Tickets" assembla-buffer-name space-name))	 
 	 (tickets (assembla-get-tickets space))
-	 (tickets (assembla-merge ':on-return 'assembla-load-ticket tickets)))
-    (assembla-list-view tickets)))
+	 (tickets (mapcar (lambda (ticket)
+			    (let ((line-text (plist-get ticket ':summary)))
+			      (plist-put ticket ':line-text line-text)
+			      (plist-put ticket ':on-return 'assembla-load-ticket)))
+			  tickets)))
+    (switch-to-buffer (get-buffer-create buffer-name))
+    (assembla-list-view tickets)
+    (use-local-map assembla-mode-map)))
 
 (defun assembla-spaces-to-buffer ()
   "Populate buffer with assembla spaces"
   (interactive)
   (let* ((buffer-read-only nil)
 	 (spaces (assembla-get-spaces))
-	 (spaces (assembla-merge ':on-return 'assembla-tickets-to-buffer spaces)))
+	 (spaces (mapcar (lambda (space)
+			   (let ((line-text (plist-get space ':name)))
+			     (plist-put space ':line-text line-text)
+			     (plist-put space ':on-return 'assembla-tickets-to-buffer)))
+			 spaces)))
     (assembla-list-view spaces)))
 
 ;;;###autoload
