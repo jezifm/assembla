@@ -8,6 +8,24 @@
        (lambda (body)
 	 (eval (car (read-from-string body)))))
 
+
+(Given "^I am in ticket list view$"
+       (lambda ()
+	 (let (tickets
+	       (buffer-read-only nil)
+	       (json-object-type 'plist)
+	       (json-array-type 'list))
+	   (save-excursion
+	     (find-file fixture-path-tickets)
+	     (goto-char (point-min))
+	     (re-search-forward "^$")
+	     (setq tickets (mapcar
+			    (lambda (ticket)
+			      (plist-put ticket ':line-text (plist-get ticket ':summary))
+			      (plist-put ticket ':on-return 'assembla-load-ticket))
+			    (json-read))))
+	   (assembla-list-view tickets))))
+
 (When "^I press return$"
       (lambda ()
 	(with-mock
@@ -23,6 +41,10 @@
 (When "^I press \"\\([^\"]+\\)\"$"
       (lambda (key)
 	(execute-kbd-macro (kbd key))))
+
+(When "^I execute \"\\([^\"]+\\)\"$"
+      (lambda (arg)
+	(funcall (intern arg))))
 
 (Then "^I should be in assembla mode$"
       (lambda ()
@@ -51,17 +73,10 @@
 
 (Then "^I should see my spaces$"
       (lambda ()
-	(should (equal (progn
-			 (goto-char (point-min))
-			 (buffer-substring (point-min) (line-end-position)))
-		       "Test Space"))
-	(should (equal (progn
-			 (goto-char (point-min))
-			 (get-text-property (point) ':name))
-		       (get-line-at-pos (point))))))
+	(lambda () (should (equal (get-text-property (point-min) ':name)
+				  (get-line-at-pos (point-min)))))))
 
 (Then "^I should see my tickets$"
-      (lambda () (should (equal (get-line-at-pos (point-min)) "My ticket")))
       (lambda () (should (equal (get-text-property (point-min) ':summary)
 				(get-line-at-pos (point-min))))))
 
@@ -76,3 +91,13 @@
 
 (Then "^My cursor is at the beginning of line$"
       (lambda () (should (equal (point) (line-beginning-position)))))
+
+(Then "^I should be in assembla dwim mode$"
+      (lambda ()
+	(should (equal major-mode 'assembla-dwim-mode))))
+
+(Then "^I should have updated tickets$"
+      (lambda ()
+	
+	))
+
